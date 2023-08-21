@@ -77,7 +77,7 @@ int angular_ode_drone_acados_sim_create(sim_solver_capsule * capsule)
     bool tmp_bool;
 
     
-    double Tsim = 0.029411764705882353;
+    double Tsim = 0.039473684210526314;
 
     
 
@@ -136,8 +136,8 @@ int angular_ode_drone_acados_sim_create(sim_solver_capsule * capsule)
 
     /* initialize input */
     // x
-    double x0[12];
-    for (int ii = 0; ii < 12; ii++)
+    double x0[33];
+    for (int ii = 0; ii < 33; ii++)
         x0[ii] = 0.0;
 
     sim_in_set(angular_ode_drone_sim_config, angular_ode_drone_sim_dims,
@@ -145,19 +145,19 @@ int angular_ode_drone_acados_sim_create(sim_solver_capsule * capsule)
 
 
     // u
-    double u0[3];
-    for (int ii = 0; ii < 3; ii++)
+    double u0[4];
+    for (int ii = 0; ii < 4; ii++)
         u0[ii] = 0.0;
 
     sim_in_set(angular_ode_drone_sim_config, angular_ode_drone_sim_dims,
                angular_ode_drone_sim_in, "u", u0);
 
     // S_forw
-    double S_forw[180];
-    for (int ii = 0; ii < 180; ii++)
+    double S_forw[1221];
+    for (int ii = 0; ii < 1221; ii++)
         S_forw[ii] = 0.0;
-    for (int ii = 0; ii < 12; ii++)
-        S_forw[ii + ii * 12 ] = 1.0;
+    for (int ii = 0; ii < 33; ii++)
+        S_forw[ii + ii * 33 ] = 1.0;
 
 
     sim_in_set(angular_ode_drone_sim_config, angular_ode_drone_sim_dims,

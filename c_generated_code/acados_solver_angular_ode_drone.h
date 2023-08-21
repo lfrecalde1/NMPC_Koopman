@@ -39,13 +39,13 @@
 #include "acados_c/ocp_nlp_interface.h"
 #include "acados_c/external_function_interface.h"
 
-#define ANGULAR_ODE_DRONE_NX     12
+#define ANGULAR_ODE_DRONE_NX     33
 #define ANGULAR_ODE_DRONE_NZ     0
-#define ANGULAR_ODE_DRONE_NU     3
+#define ANGULAR_ODE_DRONE_NU     4
 #define ANGULAR_ODE_DRONE_NP     0
 #define ANGULAR_ODE_DRONE_NBX    0
-#define ANGULAR_ODE_DRONE_NBX0   12
-#define ANGULAR_ODE_DRONE_NBU    3
+#define ANGULAR_ODE_DRONE_NBX0   33
+#define ANGULAR_ODE_DRONE_NBU    4
 #define ANGULAR_ODE_DRONE_NSBX   0
 #define ANGULAR_ODE_DRONE_NSBU   0
 #define ANGULAR_ODE_DRONE_NSH    0
@@ -60,10 +60,10 @@
 #define ANGULAR_ODE_DRONE_NG     0
 #define ANGULAR_ODE_DRONE_NBXN   0
 #define ANGULAR_ODE_DRONE_NGN    0
-#define ANGULAR_ODE_DRONE_NY0    15
-#define ANGULAR_ODE_DRONE_NY     15
-#define ANGULAR_ODE_DRONE_NYN    12
-#define ANGULAR_ODE_DRONE_N      68
+#define ANGULAR_ODE_DRONE_NY0    37
+#define ANGULAR_ODE_DRONE_NY     37
+#define ANGULAR_ODE_DRONE_NYN    33
+#define ANGULAR_ODE_DRONE_N      76
 #define ANGULAR_ODE_DRONE_NH     0
 #define ANGULAR_ODE_DRONE_NPHI   0
 #define ANGULAR_ODE_DRONE_NHN    0

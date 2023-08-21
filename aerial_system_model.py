@@ -7,6 +7,8 @@ import scipy.io
 Identification = scipy.io.loadmat('matrices_angular.mat') 
 A_a_aux = Identification['A_a'] 
 B_a_aux = Identification['B_a'] 
+nx = A_a_aux.shape[0]
+nu = B_a_aux.shape[1]
 
 def create_matrix(A, data):
     for i in range(0, data.shape[0]):
@@ -19,8 +21,6 @@ def create_matrix(A, data):
 def export_uav_model():
 
     model_name = 'angular_ode_drone'
-    nx = 12
-    nu = 3
 
     # Model MatriceS
     A_a = MX.zeros(nx, nx)
@@ -30,28 +30,12 @@ def export_uav_model():
     B_a = create_matrix(B_a, B_a_aux)
 
     ## Definition Symbolic Variables states
-    x1 = MX.sym('x1')
-    x2 = MX.sym('x2')
-    x3 = MX.sym('x3')
-    x4 = MX.sym('x4')
-    x5 = MX.sym('x5')
-    x6 = MX.sym('x6')
-    x7 = MX.sym('x7')
-    x8 = MX.sym('x8')
-    x9 = MX.sym('x9')
-    x10 = MX.sym('x10')
-    x11 = MX.sym('x11')
-    x12 = MX.sym('x12')
+
+    x = MX.sym('x', nx, 1)
     
-    x = vertcat(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12)
-
-
     ## Definition of control variables
-    u1 = MX.sym('u1')
-    u2 = MX.sym('u2')
-    u3 = MX.sym('u3')
 
-    u = vertcat(u1, u2, u3)
+    u = MX.sym('u', nu, 1)
 
     ## System Evolution
     x_k = A_a@x + B_a@u

@@ -225,7 +225,7 @@ ocp_nlp_dims* angular_ode_drone_acados_create_2_create_and_set_dimensions(angula
     nbx[0]  = NBX0;
     nsbx[0] = 0;
     ns[0] = NS - NSBX;
-    nbxe[0] = 12;
+    nbxe[0] = 33;
     ny[0] = NY0;
 
     // terminal - common
@@ -357,7 +357,7 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     if (new_time_steps) {
         angular_ode_drone_acados_update_time_steps(capsule, N, new_time_steps);
     } else {// all time_steps are identical
-        double time_step = 0.029411764705882353;
+        double time_step = 0.039473684210526314;
         for (int i = 0; i < N; i++)
         {
             ocp_nlp_in_set(nlp_config, nlp_dims, nlp_in, i, "Ts", &time_step);
@@ -394,22 +394,30 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     free(yref_e);
    double* W_0 = calloc(NY0*NY0, sizeof(double));
     // change only the non-zero elements:
-    W_0[3+(NY0) * 3] = 200;
-    W_0[4+(NY0) * 4] = 200;
-    W_0[5+(NY0) * 5] = 100;
-    W_0[12+(NY0) * 12] = 2;
-    W_0[13+(NY0) * 13] = 2;
-    W_0[14+(NY0) * 14] = 2;
+    W_0[0+(NY0) * 0] = 10;
+    W_0[1+(NY0) * 1] = 10;
+    W_0[2+(NY0) * 2] = 10;
+    W_0[18+(NY0) * 18] = 10;
+    W_0[19+(NY0) * 19] = 10;
+    W_0[20+(NY0) * 20] = 10;
+    W_0[33+(NY0) * 33] = 0.08333333333333333;
+    W_0[34+(NY0) * 34] = 2;
+    W_0[35+(NY0) * 35] = 2;
+    W_0[36+(NY0) * 36] = 2;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "W", W_0);
     free(W_0);
     double* W = calloc(NY*NY, sizeof(double));
     // change only the non-zero elements:
-    W[3+(NY) * 3] = 200;
-    W[4+(NY) * 4] = 200;
-    W[5+(NY) * 5] = 100;
-    W[12+(NY) * 12] = 2;
-    W[13+(NY) * 13] = 2;
-    W[14+(NY) * 14] = 2;
+    W[0+(NY) * 0] = 10;
+    W[1+(NY) * 1] = 10;
+    W[2+(NY) * 2] = 10;
+    W[18+(NY) * 18] = 10;
+    W[19+(NY) * 19] = 10;
+    W[20+(NY) * 20] = 10;
+    W[33+(NY) * 33] = 0.08333333333333333;
+    W[34+(NY) * 34] = 2;
+    W[35+(NY) * 35] = 2;
+    W[36+(NY) * 36] = 2;
 
     for (int i = 1; i < N; i++)
     {
@@ -418,9 +426,12 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     free(W);
     double* W_e = calloc(NYN*NYN, sizeof(double));
     // change only the non-zero elements:
-    W_e[3+(NYN) * 3] = 200;
-    W_e[4+(NYN) * 4] = 200;
-    W_e[5+(NYN) * 5] = 100;
+    W_e[0+(NYN) * 0] = 10;
+    W_e[1+(NYN) * 1] = 10;
+    W_e[2+(NYN) * 2] = 10;
+    W_e[18+(NYN) * 18] = 10;
+    W_e[19+(NYN) * 19] = 10;
+    W_e[20+(NYN) * 20] = 10;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "W", W_e);
     free(W_e);
     double* Vx_0 = calloc(NY0*NX, sizeof(double));
@@ -437,13 +448,35 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     Vx_0[9+(NY0) * 9] = 1;
     Vx_0[10+(NY0) * 10] = 1;
     Vx_0[11+(NY0) * 11] = 1;
+    Vx_0[12+(NY0) * 12] = 1;
+    Vx_0[13+(NY0) * 13] = 1;
+    Vx_0[14+(NY0) * 14] = 1;
+    Vx_0[15+(NY0) * 15] = 1;
+    Vx_0[16+(NY0) * 16] = 1;
+    Vx_0[17+(NY0) * 17] = 1;
+    Vx_0[18+(NY0) * 18] = 1;
+    Vx_0[19+(NY0) * 19] = 1;
+    Vx_0[20+(NY0) * 20] = 1;
+    Vx_0[21+(NY0) * 21] = 1;
+    Vx_0[22+(NY0) * 22] = 1;
+    Vx_0[23+(NY0) * 23] = 1;
+    Vx_0[24+(NY0) * 24] = 1;
+    Vx_0[25+(NY0) * 25] = 1;
+    Vx_0[26+(NY0) * 26] = 1;
+    Vx_0[27+(NY0) * 27] = 1;
+    Vx_0[28+(NY0) * 28] = 1;
+    Vx_0[29+(NY0) * 29] = 1;
+    Vx_0[30+(NY0) * 30] = 1;
+    Vx_0[31+(NY0) * 31] = 1;
+    Vx_0[32+(NY0) * 32] = 1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "Vx", Vx_0);
     free(Vx_0);
     double* Vu_0 = calloc(NY0*NU, sizeof(double));
     // change only the non-zero elements:
-    Vu_0[12+(NY0) * 0] = 1;
-    Vu_0[13+(NY0) * 1] = 1;
-    Vu_0[14+(NY0) * 2] = 1;
+    Vu_0[33+(NY0) * 0] = 1;
+    Vu_0[34+(NY0) * 1] = 1;
+    Vu_0[35+(NY0) * 2] = 1;
+    Vu_0[36+(NY0) * 3] = 1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "Vu", Vu_0);
     free(Vu_0);
     double* Vx = calloc(NY*NX, sizeof(double));
@@ -460,6 +493,27 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     Vx[9+(NY) * 9] = 1;
     Vx[10+(NY) * 10] = 1;
     Vx[11+(NY) * 11] = 1;
+    Vx[12+(NY) * 12] = 1;
+    Vx[13+(NY) * 13] = 1;
+    Vx[14+(NY) * 14] = 1;
+    Vx[15+(NY) * 15] = 1;
+    Vx[16+(NY) * 16] = 1;
+    Vx[17+(NY) * 17] = 1;
+    Vx[18+(NY) * 18] = 1;
+    Vx[19+(NY) * 19] = 1;
+    Vx[20+(NY) * 20] = 1;
+    Vx[21+(NY) * 21] = 1;
+    Vx[22+(NY) * 22] = 1;
+    Vx[23+(NY) * 23] = 1;
+    Vx[24+(NY) * 24] = 1;
+    Vx[25+(NY) * 25] = 1;
+    Vx[26+(NY) * 26] = 1;
+    Vx[27+(NY) * 27] = 1;
+    Vx[28+(NY) * 28] = 1;
+    Vx[29+(NY) * 29] = 1;
+    Vx[30+(NY) * 30] = 1;
+    Vx[31+(NY) * 31] = 1;
+    Vx[32+(NY) * 32] = 1;
     for (int i = 1; i < N; i++)
     {
         ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, i, "Vx", Vx);
@@ -470,9 +524,10 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     double* Vu = calloc(NY*NU, sizeof(double));
     // change only the non-zero elements:
     
-    Vu[12+(NY) * 0] = 1;
-    Vu[13+(NY) * 1] = 1;
-    Vu[14+(NY) * 2] = 1;
+    Vu[33+(NY) * 0] = 1;
+    Vu[34+(NY) * 1] = 1;
+    Vu[35+(NY) * 2] = 1;
+    Vu[36+(NY) * 3] = 1;
 
     for (int i = 1; i < N; i++)
     {
@@ -494,6 +549,27 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     Vx_e[9+(NYN) * 9] = 1;
     Vx_e[10+(NYN) * 10] = 1;
     Vx_e[11+(NYN) * 11] = 1;
+    Vx_e[12+(NYN) * 12] = 1;
+    Vx_e[13+(NYN) * 13] = 1;
+    Vx_e[14+(NYN) * 14] = 1;
+    Vx_e[15+(NYN) * 15] = 1;
+    Vx_e[16+(NYN) * 16] = 1;
+    Vx_e[17+(NYN) * 17] = 1;
+    Vx_e[18+(NYN) * 18] = 1;
+    Vx_e[19+(NYN) * 19] = 1;
+    Vx_e[20+(NYN) * 20] = 1;
+    Vx_e[21+(NYN) * 21] = 1;
+    Vx_e[22+(NYN) * 22] = 1;
+    Vx_e[23+(NYN) * 23] = 1;
+    Vx_e[24+(NYN) * 24] = 1;
+    Vx_e[25+(NYN) * 25] = 1;
+    Vx_e[26+(NYN) * 26] = 1;
+    Vx_e[27+(NYN) * 27] = 1;
+    Vx_e[28+(NYN) * 28] = 1;
+    Vx_e[29+(NYN) * 29] = 1;
+    Vx_e[30+(NYN) * 30] = 1;
+    Vx_e[31+(NYN) * 31] = 1;
+    Vx_e[32+(NYN) * 32] = 1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "Vx", Vx_e);
     free(Vx_e);
 
@@ -516,35 +592,98 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     idxbx0[9] = 9;
     idxbx0[10] = 10;
     idxbx0[11] = 11;
+    idxbx0[12] = 12;
+    idxbx0[13] = 13;
+    idxbx0[14] = 14;
+    idxbx0[15] = 15;
+    idxbx0[16] = 16;
+    idxbx0[17] = 17;
+    idxbx0[18] = 18;
+    idxbx0[19] = 19;
+    idxbx0[20] = 20;
+    idxbx0[21] = 21;
+    idxbx0[22] = 22;
+    idxbx0[23] = 23;
+    idxbx0[24] = 24;
+    idxbx0[25] = 25;
+    idxbx0[26] = 26;
+    idxbx0[27] = 27;
+    idxbx0[28] = 28;
+    idxbx0[29] = 29;
+    idxbx0[30] = 30;
+    idxbx0[31] = 31;
+    idxbx0[32] = 32;
 
     double* lubx0 = calloc(2*NBX0, sizeof(double));
     double* lbx0 = lubx0;
     double* ubx0 = lubx0 + NBX0;
     // change only the non-zero elements:
-    lbx0[0] = -0.0000000964865042529074;
-    ubx0[0] = -0.0000000964865042529074;
-    lbx0[1] = -0.000000038046590100648814;
-    ubx0[1] = -0.000000038046590100648814;
-    lbx0[2] = -2.873536239975874;
-    ubx0[2] = -2.873536239975874;
-    lbx0[3] = 0.000000016418804026087645;
-    ubx0[3] = 0.000000016418804026087645;
-    lbx0[4] = 0.0000000021866367175254872;
-    ubx0[4] = 0.0000000021866367175254872;
-    lbx0[5] = 0.00001717621489681919;
-    ubx0[5] = 0.00001717621489681919;
-    lbx0[6] = 0.09243651240855608;
-    ubx0[6] = 0.09243651240855608;
-    lbx0[7] = 0.042901292820432986;
-    ubx0[7] = 0.042901292820432986;
-    lbx0[8] = 0.09243651161862836;
-    ubx0[8] = 0.09243651161862836;
-    lbx0[9] = 0.04290129055237144;
-    ubx0[9] = 0.04290129055237144;
-    lbx0[10] = 0.09243746466985377;
-    ubx0[10] = 0.09243746466985377;
-    lbx0[11] = 0.0429040274450876;
-    ubx0[11] = 0.0429040274450876;
+    lbx0[0] = 0.01671975356866851;
+    ubx0[0] = 0.01671975356866851;
+    lbx0[1] = 0.006881174966562625;
+    ubx0[1] = 0.006881174966562625;
+    lbx0[2] = 0.04919681213063508;
+    ubx0[2] = 0.04919681213063508;
+    lbx0[3] = 0.4951477515859966;
+    ubx0[3] = 0.4951477515859966;
+    lbx0[4] = 0.12685958906181688;
+    ubx0[4] = 0.12685958906181688;
+    lbx0[5] = 0.8699894559817574;
+    ubx0[5] = 0.8699894559817574;
+    lbx0[6] = 0.5208096221357555;
+    ubx0[6] = 0.5208096221357555;
+    lbx0[7] = 0.49631481008938494;
+    ubx0[7] = 0.49631481008938494;
+    lbx0[8] = 0.13046759629137042;
+    ubx0[8] = 0.13046759629137042;
+    lbx0[9] = 0.8604627369219243;
+    ubx0[9] = 0.8604627369219243;
+    lbx0[10] = 0.5066454187134531;
+    ubx0[10] = 0.5066454187134531;
+    lbx0[11] = 0.7111443391024831;
+    ubx0[11] = 0.7111443391024831;
+    lbx0[12] = 0.3059300389646824;
+    ubx0[12] = 0.3059300389646824;
+    lbx0[13] = 0.7008998047454811;
+    ubx0[13] = 0.7008998047454811;
+    lbx0[14] = 0.2626633592490298;
+    ubx0[14] = 0.2626633592490298;
+    lbx0[15] = -0.0058751316405896824;
+    ubx0[15] = -0.0058751316405896824;
+    lbx0[16] = 0.0012713720619063071;
+    ubx0[16] = 0.0012713720619063071;
+    lbx0[17] = 0.001312650505056322;
+    ubx0[17] = 0.001312650505056322;
+    lbx0[18] = -0.04426189708218288;
+    ubx0[18] = -0.04426189708218288;
+    lbx0[19] = -0.00218445739921455;
+    ubx0[19] = -0.00218445739921455;
+    lbx0[20] = -0.00007774446273687511;
+    ubx0[20] = -0.00007774446273687511;
+    lbx0[21] = 0.04079976746739129;
+    ubx0[21] = 0.04079976746739129;
+    lbx0[22] = 0.1393233002304765;
+    ubx0[22] = 0.1393233002304765;
+    lbx0[23] = 0.13750885568777424;
+    ubx0[23] = 0.13750885568777424;
+    lbx0[24] = 0.056270604261873566;
+    ubx0[24] = 0.056270604261873566;
+    lbx0[25] = 0.03314603506357502;
+    ubx0[25] = 0.03314603506357502;
+    lbx0[26] = 0.12936945657190763;
+    ubx0[26] = 0.12936945657190763;
+    lbx0[27] = 0.123762672297924;
+    ubx0[27] = 0.123762672297924;
+    lbx0[28] = 0.052304350960935685;
+    ubx0[28] = 0.052304350960935685;
+    lbx0[29] = 0.0327847317879912;
+    ubx0[29] = 0.0327847317879912;
+    lbx0[30] = 0.12881825948240552;
+    ubx0[30] = 0.12881825948240552;
+    lbx0[31] = 0.12304302137588012;
+    ubx0[31] = 0.12304302137588012;
+    lbx0[32] = 0.05208419216633014;
+    ubx0[32] = 0.05208419216633014;
 
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "idxbx", idxbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "lbx", lbx0);
@@ -552,7 +691,7 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     free(idxbx0);
     free(lubx0);
     // idxbxe_0
-    int* idxbxe_0 = malloc(12 * sizeof(int));
+    int* idxbxe_0 = malloc(33 * sizeof(int));
     
     idxbxe_0[0] = 0;
     idxbxe_0[1] = 1;
@@ -566,6 +705,27 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     idxbxe_0[9] = 9;
     idxbxe_0[10] = 10;
     idxbxe_0[11] = 11;
+    idxbxe_0[12] = 12;
+    idxbxe_0[13] = 13;
+    idxbxe_0[14] = 14;
+    idxbxe_0[15] = 15;
+    idxbxe_0[16] = 16;
+    idxbxe_0[17] = 17;
+    idxbxe_0[18] = 18;
+    idxbxe_0[19] = 19;
+    idxbxe_0[20] = 20;
+    idxbxe_0[21] = 21;
+    idxbxe_0[22] = 22;
+    idxbxe_0[23] = 23;
+    idxbxe_0[24] = 24;
+    idxbxe_0[25] = 25;
+    idxbxe_0[26] = 26;
+    idxbxe_0[27] = 27;
+    idxbxe_0[28] = 28;
+    idxbxe_0[29] = 29;
+    idxbxe_0[30] = 30;
+    idxbxe_0[31] = 31;
+    idxbxe_0[32] = 32;
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "idxbxe", idxbxe_0);
     free(idxbxe_0);
 
@@ -576,16 +736,19 @@ void angular_ode_drone_acados_create_5_set_nlp_in(angular_ode_drone_solver_capsu
     idxbu[0] = 0;
     idxbu[1] = 1;
     idxbu[2] = 2;
+    idxbu[3] = 3;
     double* lubu = calloc(2*NBU, sizeof(double));
     double* lbu = lubu;
     double* ubu = lubu + NBU;
     
-    lbu[0] = -0.5;
-    ubu[0] = 0.5;
+    lbu[0] = 3;
+    ubu[0] = 12;
     lbu[1] = -0.5;
     ubu[1] = 0.5;
     lbu[2] = -0.5;
     ubu[2] = 0.5;
+    lbu[3] = -0.5;
+    ubu[3] = 0.5;
 
     for (int i = 0; i < N; i++)
     {
@@ -698,18 +861,39 @@ void angular_ode_drone_acados_create_7_set_nlp_out(angular_ode_drone_solver_caps
 
     // initialize with x0
     
-    x0[0] = -0.0000000964865042529074;
-    x0[1] = -0.000000038046590100648814;
-    x0[2] = -2.873536239975874;
-    x0[3] = 0.000000016418804026087645;
-    x0[4] = 0.0000000021866367175254872;
-    x0[5] = 0.00001717621489681919;
-    x0[6] = 0.09243651240855608;
-    x0[7] = 0.042901292820432986;
-    x0[8] = 0.09243651161862836;
-    x0[9] = 0.04290129055237144;
-    x0[10] = 0.09243746466985377;
-    x0[11] = 0.0429040274450876;
+    x0[0] = 0.01671975356866851;
+    x0[1] = 0.006881174966562625;
+    x0[2] = 0.04919681213063508;
+    x0[3] = 0.4951477515859966;
+    x0[4] = 0.12685958906181688;
+    x0[5] = 0.8699894559817574;
+    x0[6] = 0.5208096221357555;
+    x0[7] = 0.49631481008938494;
+    x0[8] = 0.13046759629137042;
+    x0[9] = 0.8604627369219243;
+    x0[10] = 0.5066454187134531;
+    x0[11] = 0.7111443391024831;
+    x0[12] = 0.3059300389646824;
+    x0[13] = 0.7008998047454811;
+    x0[14] = 0.2626633592490298;
+    x0[15] = -0.0058751316405896824;
+    x0[16] = 0.0012713720619063071;
+    x0[17] = 0.001312650505056322;
+    x0[18] = -0.04426189708218288;
+    x0[19] = -0.00218445739921455;
+    x0[20] = -0.00007774446273687511;
+    x0[21] = 0.04079976746739129;
+    x0[22] = 0.1393233002304765;
+    x0[23] = 0.13750885568777424;
+    x0[24] = 0.056270604261873566;
+    x0[25] = 0.03314603506357502;
+    x0[26] = 0.12936945657190763;
+    x0[27] = 0.123762672297924;
+    x0[28] = 0.052304350960935685;
+    x0[29] = 0.0327847317879912;
+    x0[30] = 0.12881825948240552;
+    x0[31] = 0.12304302137588012;
+    x0[32] = 0.05208419216633014;
 
 
     double* u0 = xu0 + NX;

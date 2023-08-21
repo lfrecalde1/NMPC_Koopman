@@ -37,9 +37,9 @@
 #include "acados_c/sim_interface.h"
 #include "acados_c/external_function_interface.h"
 
-#define ANGULAR_ODE_DRONE_NX     12
+#define ANGULAR_ODE_DRONE_NX     33
 #define ANGULAR_ODE_DRONE_NZ     0
-#define ANGULAR_ODE_DRONE_NU     3
+#define ANGULAR_ODE_DRONE_NU     4
 #define ANGULAR_ODE_DRONE_NP     0
 
 #ifdef __cplusplus
