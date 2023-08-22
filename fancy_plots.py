@@ -278,7 +278,7 @@ def plot_states(fig11, ax11, ax21, ax31, x, h, t, name):
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
-    fig11.savefig(name + ".eps")
+    fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
 
 def plot_states_velocity(fig11, ax11, ax21, ax31, x, euler_p, t, name):
@@ -334,7 +334,7 @@ def plot_states_velocity(fig11, ax11, ax21, ax31, x, euler_p, t, name):
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
-    fig11.savefig(name + ".eps")
+    fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
 
 def plot_control(fig11, ax11, ax21, ax31, euler_p, t, name):
@@ -384,7 +384,7 @@ def plot_control(fig11, ax11, ax21, ax31, euler_p, t, name):
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
-    fig11.savefig(name + ".eps")
+    fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
 
 def plot_control_full(fig11, ax11, ax21, ax31, ax41, euler_p, t, name):
@@ -447,7 +447,7 @@ def plot_control_full(fig11, ax11, ax21, ax31, ax41, euler_p, t, name):
     ax41.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
-    fig11.savefig(name + ".eps")
+    fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
 def plot_states_reference(fig11, ax11, ax21, ax31, x, reference, t, name):
     ax11.set_xlim((t[0], t[-1]))
@@ -502,7 +502,7 @@ def plot_states_reference(fig11, ax11, ax21, ax31, x, reference, t, name):
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
-    fig11.savefig(name + ".eps")
+    fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
 
 def plot_states_reference_angular(fig11, ax11, ax21, ax31, x, reference, t, name):
@@ -558,5 +558,5 @@ def plot_states_reference_angular(fig11, ax11, ax21, ax31, x, reference, t, name
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
-    fig11.savefig(name + ".eps")
+    fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
