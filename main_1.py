@@ -124,14 +124,18 @@ def create_ocp_solver_description(x0, N_horizon, t_horizon, z_max, z_min, phi_ma
     ocp.dims.N = N_horizon
 
     # set cost
-    Q_mat = 10 * np.zeros((nx, nx), dtype=np.double)
-    Q_mat[0, 0] = 1*10
-    Q_mat[1, 1] = 1*10
-    Q_mat[2, 2] = 1*10
+    Q_mat = np.zeros((nx, nx), dtype=np.double)
+    Q_mat[0, 0] = 5
+    Q_mat[1, 1] = 5
+    Q_mat[2, 2] = 5
+
+    Q_mat[15, 15] = 15
+    Q_mat[16, 16] = 15
+    Q_mat[17, 17] = 0.01
 
     Q_mat[18, 18] = 10
     Q_mat[19, 19] = 10
-    Q_mat[20, 20] = 10
+    Q_mat[20, 20] = 15
     R_mat = 1 * np.diag([(1/z_max), (1/phi_max), (1/theta_max), (1/psi_p_max)])
 
     ocp.cost.cost_type = "LINEAR_LS"
@@ -192,7 +196,7 @@ def main():
         t[i+1] = t[i] + t_s
 
     # Prediction Time
-    t_prediction= 3;
+    t_prediction= 2;
 
     # Nodes inside MPC
     N = np.arange(0, t_prediction + t_s, t_s)
@@ -217,17 +221,17 @@ def main():
     # Desired Values
     xref = np.zeros((37, t.shape[0]), dtype = np.double)
     # Linear Velocities
-    xref[0,:] = 0.0 * np.sin(18*0.04*t)
-    xref[1,:] =  0.0 * np.cos(18*0.08*t)
-    xref[2,:] = 0.2 * np.sin (0.5* t)
+    xref[0,:] = 0.5 * np.sign(np.sin(18*0.04*t))
+    xref[1,:] =  0.0 * np.sign(np.cos(18*0.04*t))
+    xref[2,:] = 0.0 * np.sign(np.sin (0.8* t))
     # Angular Velocities
     xref[18,:] = 0 * np.sin(18*0.04*t)
     xref[19,:] =  0 * np.cos(18*0.08*t)
     xref[20,:] = 0.2 * np.sin (0.5* t)
 
-    xref[0, :] = -0.1 * np.sign(np.sin(0.2*t))
-    xref[1, :] = 0.1 * np.sign(np.sin(0.2*t))
-    xref[2, :] = 0.1 * np.sign(np.cos(0.2*t))
+    #xref[0, :] = -0.1 * np.sign(np.sin(0.2*t))
+    #xref[1, :] = 0.1 * np.sign(np.sin(0.2*t))
+    #xref[2, :] = 0.1 * np.sign(np.cos(0.2*t))
 
     # Euler Angles
     euler = np.zeros((3, t.shape[0] - N_prediction), dtype=np.double)
@@ -253,9 +257,9 @@ def main():
 
     # Limits Control values
     z_max = 12
-    phi_max = 0.5
-    theta_max = 0.5
-    psi_p_max = 0.5
+    phi_max = 0.3
+    theta_max = 0.3
+    psi_p_max = 0.3
 
     phi_min = -phi_max
     theta_min = -theta_max
@@ -305,11 +309,10 @@ def main():
     # System Figures
     plt.imshow(A_aux)
     plt.colorbar()
-    plt.show()
+
     
     plt.imshow(B_aux)
     plt.colorbar()
-    plt.show()
 
     fig13, ax13, ax23, ax33 = fancy_plots_3()
     plot_states_reference(fig13, ax13, ax23, ax33, x[0:3,:], xref[0:3,:], t, "Reference_linear")
