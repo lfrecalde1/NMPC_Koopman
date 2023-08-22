@@ -65,20 +65,21 @@ def controller_z(mass, gravity, qdp, qp):
     yp = qp[1]
     zp = qp[2]
 
-    xdp = qdp[0]
-    ydp = qdp[1]
-    zdp = qdp[2]
+    #xdp = qdp[0]
+    #ydp = qdp[1]
+    #zdp = qdp[2]
 
     # Control error
-    error = qdp - qp
+    #error = qdp - qp
 
-    error_vector = error.reshape((3,1))
+    #error_vector = error.reshape((3,1))
 
     # Control Law
-    aux_control = Kp@error_vector
+    #aux_control = Kp@error_vector
 
     # Gravity + compensation velocity
-    control_value = mass*gravity + aux_control[2,0]
+    #control_value = mass*gravity + aux_control[2,0]
+    control_value =  qdp[0]
     
     return control_value
 
@@ -115,8 +116,9 @@ def controller_attitude_roll(qdp, qp, rate, ts, r_c, v_c):
     zp = qp[2]
 
     roll_d, v_c = pid(ypd, yp, v_c, 0.5, 0, 0.001, ts)
+    roll_d = qdp[1]
     # Control Law
-    control_value, r_c = pid(-roll_d, p, r_c, 0.05, 0, 0.05, ts)
+    control_value, r_c = pid(roll_d, p, r_c, 0.05, 0, 0.05, ts)
 
     
     return control_value, r_c, v_c, -roll_d
@@ -138,6 +140,7 @@ def controller_attitude_pitch(qdp, qp, rate, ts, p_c, v_c):
     zp = qp[2]
 
     pitch_d, v_c = pid(xpd, xp, v_c, 0.5, 0, 0.001, ts)
+    pitch_d = qdp[2]
 
     # Control Law
     control_value, p_c = pid(pitch_d, q, p_c, 0.05, 0, 0.05, ts)
@@ -145,7 +148,7 @@ def controller_attitude_pitch(qdp, qp, rate, ts, p_c, v_c):
     
     return control_value, p_c, v_c, pitch_d
 
-def controller_attitude_r(qdp, qp, rate_d, rate):
+def controller_attitude_r(rate_d, rate):
 
     # Split values
     rd= rate_d[2]

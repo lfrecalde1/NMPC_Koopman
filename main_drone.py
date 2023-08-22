@@ -51,7 +51,7 @@ def main(odom_pub, ref_pub):
     t = np.arange(0, tf+ts, ts, dtype=np.double)
 
     # Parameters of the entire system
-    mass = 0.4 + 4*(0.025) + 4*(0.015) + 0.05 # Mass condering the rope and the load
+    mass = 0.4 # Mass condering the rope and the load
     g = 9.81
 
     # States System pose
@@ -110,7 +110,7 @@ def main(odom_pub, ref_pub):
                 u[0, k] = controller_z(mass, g, [0, 0, 0.3], qp[:,k ])
                 u[1, k], roll_c, vy_c, p_reference = controller_attitude_roll([0, 0, 0.3], qp[:, k], [n[0, k], n[1, k], rate_b[2, k]], ts, roll_c, vy_c)
                 u[2, k], pitch_c, vx_c, q_reference = controller_attitude_pitch([0, 0, 0.3], qp[:, k], [n[0, k], n[1, k], rate_b[2, k]], ts, pitch_c, vx_c)
-                u[3, k] = controller_attitude_r([0, 0, 0.3], qp[:, k], rate_d[:, k], [n[0, k], n[1, k], rate_b[2, k]])
+                u[3, k] = controller_attitude_r(rate_d[:, k], [n[0, k], n[1, k], rate_b[2, k]])
                 control_action(data, u[:,k])
                 # System evolution
                 mujoco.mj_step(m, data)
@@ -143,16 +143,16 @@ def main(odom_pub, ref_pub):
             for k in range(0, t.shape[0]):
                 tic = time.time()
                 # Update Reference Signals
-                qdp[0, k] = vxd
-                qdp[1, k] = vyd
-                qdp[2, k] = vzd
+                qdp[0, k] = vzd
+                qdp[1, k] = wxd
+                qdp[2, k] = wyd
                 rate_d[2, k] = wzd
 
                 # Control Section
                 u[0, k] = controller_z(mass, g, qdp[:, k], qp[:, k])
                 u[1, k], roll_c, vy_c, p_reference = controller_attitude_roll(qdp[:, k], qp[:, k], [n[0, k], n[1, k], rate_b[2, k]], ts, roll_c, vy_c)
                 u[2, k], pitch_c, vx_c, q_reference = controller_attitude_pitch(qdp[:, k], qp[:, k], [n[0, k], n[1, k], rate_b[2, k]], ts, pitch_c, vx_c)
-                u[3, k] = controller_attitude_r(qdp[:, k], qp[:, k], rate_d[:, k], [n[0, k], n[1, k], rate_b[2, k]])
+                u[3, k] = controller_attitude_r(rate_d[:, k], [n[0, k], n[1, k], rate_b[2, k]])
 
                 # Send Control Actions  to the system
                 control_action(data, u[:,k])
@@ -263,13 +263,3 @@ if __name__ == '__main__':
     else:
         print("Complete Execution")
         pass
-
-
-    # Velocidades en el mundo Lineales
-    # Velocidad angulares en el cuerpo
-    # Vref Cuerpo
-    # Quaternions 
-    # Posiciones
-    # Empuje y torque
-
-

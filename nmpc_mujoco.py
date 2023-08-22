@@ -1,3 +1,4 @@
+
 from acados_template import AcadosOcp, AcadosOcpSolver, AcadosSimSolver
 from aerial_system_model_complete import export_uav_model
 import scipy.linalg
@@ -10,6 +11,10 @@ from fancy_plots import fancy_plots_2, fancy_plots_1, fancy_plots_3, plot_states
 from fancy_plots  import fancy_plots_4, plot_control_full
 import scipy.io
 from nmpc import euler_p_f, rbf, lift_Fun_angular, lift_Fun_linear, lift_Fun, f_angular_system, create_ocp_solver_description
+import rospy
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
+from scipy.spatial.transform import Rotation as R
 #from c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverCython
 
 ## Load angular parameters
@@ -21,24 +26,108 @@ C = Identification['C']
 A_aux = Identification['A'] 
 B_aux = Identification['B'] 
 
-def main():
+# Global variables Odometry Drone
+x_real = 0.0
+y_real = 0.0
+z_real = 0.0
+vx_real = 0.0
+vy_real = 0.0
+vz_real = 0.0
+
+# Angular velocities
+qx_real = 0.0005
+qy_real = 0.0
+qz_real = 0.0
+qw_real = 1.0
+wx_real = 0.0
+wy_real = 0.0
+wz_real = 0.0
+
+def euler_p_f(omega, euler):
+    ## Create Elements for the matrix
+    T_11 = 1
+    T_12 = 0
+    T_13 = -np.sin(euler[0])
+    T_21 = 0
+    T_22 = np.cos(euler[0])
+    T_23 = np.sin(euler[0])*np.cos(euler[1])
+    T_31 = 0
+    T_32 = -np.sin(euler[0])
+    T_33 = np.cos(euler[0])*np.cos(euler[1])
+    T = np.array([[T_11, T_12, T_13], [T_21, T_22, T_23], [T_31, T_32, T_33]], dtype=np.double)
+
+    # Dfinition Omega
+    w = omega.reshape(3, 1)
+    aux = T@w
+    aux = aux.reshape(3, )
+
+    return aux
+
+## Reference system
+def get_reference(ref, ref_msg):
+        ref_msg.linear.x = 0
+        ref_msg.linear.y = 0
+        ref_msg.linear.z = ref[0]
+
+        ref_msg.angular.x = ref[1]
+        ref_msg.angular.y = ref[2]
+        ref_msg.angular.z = ref[3]
+        return ref_msg
+
+def send_reference(ref_msg, ref_pu):
+    ref_pu.publish(ref_msg)
+    return None
+
+def odometry_call_back(odom_msg):
+    global x_real, y_real, z_real, qx_real, qy_real, qz_real, qw_real, vx_real, vy_real, vz_real, wx_real, wy_real, wz_real
+    # Read desired linear velocities from node
+    x_real = odom_msg.pose.pose.position.x 
+    y_real = odom_msg.pose.pose.position.y
+    z_real = odom_msg.pose.pose.position.z
+    vx_real = odom_msg.twist.twist.linear.x
+    vy_real = odom_msg.twist.twist.linear.y
+    vz_real = odom_msg.twist.twist.linear.z
+
+
+    qx_real = odom_msg.pose.pose.orientation.x
+    qy_real = odom_msg.pose.pose.orientation.y
+    qz_real = odom_msg.pose.pose.orientation.z
+    qw_real = odom_msg.pose.pose.orientation.w
+
+    wx_real = odom_msg.twist.twist.angular.x
+    wy_real = odom_msg.twist.twist.angular.y
+    wz_real = odom_msg.twist.twist.angular.z
+    return None
+
+def get_system_states_ori_sensor():
+    x = np.array([qx_real, qy_real, qz_real, qw_real], dtype=np.double)
+    r = R.from_quat(x)
+    return r.as_euler('xyz', degrees=False)
+
+def get_system_states_sensor():
+    quat = np.array([qx_real, qy_real, qz_real, qw_real], dtype=np.double)
+    rot = R.from_quat(quat)
+    euler = rot.as_euler('xyz', degrees=False)
+    x = np.array([x_real, y_real, z_real, qw_real, qx_real, qy_real, qz_real, euler[0], euler[1], euler[2]], dtype=np.double)
+    return x
+
+# Get system velocities
+def get_system_velocity_sensor():
+    q = np.array([qx_real, qy_real, qz_real, qw_real], dtype=np.double)
+    rot = R.from_quat(q)
+    rot = rot.as_matrix()
+    v_body = np.array([[vx_real], [vy_real], [vz_real]], dtype=np.double)
+    v_world = rot@v_body
+    x = np.array([v_world[0, 0], v_world[1, 0], v_world[2, 0], wx_real, wy_real, wz_real], dtype=np.double)
+    return None
+
+def main(control_pub):
     # Initial Values System
     # Read Matlab Data
-    Data_1 = scipy.io.loadmat('Data_mujoco_1.mat')
-    Data_2 = scipy.io.loadmat('Data_mujoco_2.mat')
-
-    h = np.hstack((Data_1['h'], Data_2['h']))
-    hp = np.hstack((Data_1['hp'], Data_2['hp']))
-    T_ref = np.hstack((Data_1['T_ref'], Data_2['T_ref']))
-    t = np.hstack((Data_1['t'], Data_2['t']))
-    t = t.reshape(t.shape[1],)
-    t_s = t[1] - t[0]
-    t = np.zeros((T_ref.shape[1]), dtype=np.double)
-    t[0] = 0.0
-
-    # Create new time vector
-    for i in range(0, T_ref.shape[1]-1):
-        t[i+1] = t[i] + t_s
+    # Simulation time parameters
+    t_s = 0.04
+    tf = 40
+    t = np.arange(0, tf+t_s, t_s, dtype=np.double)
 
     # Prediction Time
     t_prediction= 2;
@@ -57,10 +146,7 @@ def main():
 
     # Initial Control values
     u_control = np.zeros((4, t.shape[0] - N_prediction), dtype = np.double)
-    u_control[0, :] = T_ref[0,0:t.shape[0]-N_prediction]
-    u_control[1, :] = T_ref[1,0:t.shape[0]-N_prediction]
-    u_control[2, :] = T_ref[2,0:t.shape[0]-N_prediction]
-    u_control[3, :] = T_ref[3,0:t.shape[0]-N_prediction]
+    ref_drone = Twist()
 
 
     # Desired Values
@@ -74,20 +160,36 @@ def main():
     xref[19,:] =  0 * np.cos(18*0.08*t)
     xref[20,:] = 0.3 * np.sin (0.5* t)
 
-    #xref[0, :] = -0.1 * np.sign(np.sin(0.2*t))
-    #xref[1, :] = 0.1 * np.sign(np.sin(0.2*t))
-    #xref[2, :] = 0.1 * np.sign(np.cos(0.2*t))
+    ## Complete states of the system
+    h = np.zeros((10, t.shape[0]+1 - N_prediction), dtype = np.double)
+    hp = np.zeros((6, t.shape[0]+1 - N_prediction), dtype = np.double)
+
 
     # Euler Angles
-    euler = np.zeros((3, t.shape[0] - N_prediction), dtype=np.double)
-    euler_p = np.zeros((3, t.shape[0] - N_prediction), dtype=np.double)
+    euler = np.zeros((3, t.shape[0]+1 - N_prediction), dtype=np.double)
+    euler_p = np.zeros((3, t.shape[0]+1 - N_prediction), dtype=np.double)
+
+    for k in range(0, 50):
+        tic = time.time()
+        ## Get Contol Action or nothing
+        ref_drone = get_reference([0, 0, 0, 0], ref_drone)
+        send_reference(ref_drone, control_pub)
+
+        # Loop_rate.sleep()
+        while (time.time() - tic <= t_s):
+                None
+        toc = time.time() - tic 
+        print("Init System")
+    
+    # Set initial Conditions
+    h[:, 0] = get_system_states_sensor()
+    hp[:, 0] = get_system_velocity_sensor()
 
     # Definition of euler angles
     euler[:, 0] = h[7:10, 0]
 
     # Get Euler dot throughout
-    for k in range(0, euler.shape[1]):
-        euler_p[:, k] = euler_p_f(hp[3:6, k], euler[:,k])
+    euler_p[:, 0] = euler_p_f(hp[3:6, 0], euler[:, 0])
 
     ## Initial Condition
     x[0:3, 0] = hp[0:3, 0]
@@ -131,11 +233,13 @@ def main():
 
 
     for k in range(0, t.shape[0]- N_prediction):
+
         # Get Computational Time
         tic = time.time()
         x_lift = lift_Fun(x[:, k], cent_a, cent_l, cent_lz)
         acados_ocp_solver.set(0, "lbx", x_lift)
         acados_ocp_solver.set(0, "ubx", x_lift)
+
         # Update yref
         for j in range(N_prediction):
             yref = xref[:,k+j]
@@ -144,12 +248,37 @@ def main():
         acados_ocp_solver.set(N_prediction, "yref", yref_N[0:33])
         # Get Computational Time
         status = acados_ocp_solver.solve()
-        toc_solver = time.time()- tic
+
         # Get Control Signal
         u_control[:, k] = acados_ocp_solver.get(0, "u")
+        ref_drone = get_reference([0, 0, 0, 0], ref_drone)
+        send_reference(ref_drone, control_pub)
+
         # System Evolution
-        x[:, k+1] = f_angular_system(x_lift, u_control[:, k], f_complete, C)
+        #x[:, k+1] = f_angular_system(x_lift, u_control[:, k], f_complete, C)
+        # Loop_rate.sleep()
+        while (time.time() - tic <= t_s):
+                None
+        toc_solver = time.time()- tic
+        # Save Data
+        h[:, k+1] = get_system_states_sensor()
+        hp[:, k+1] = get_system_velocity_sensor()
+        # Definition of euler angles
+        euler[:, k+1] = h[7:10, k+1]
+
+        # Get Euler dot throughout
+        euler_p[:, k+1] = euler_p_f(hp[3:6, k+1], euler[:, k+1])
+
+        ## Initial Condition
+        x[0:3, k+1] = hp[0:3, k+1]
+        x[3:6, k+1] = h[7:10, k+1]
+        x[6:9, k+1] = euler_p[:, k+1]
+        t_k = t_k + toc
+        # Set zero Values
         delta_t[:, k] = toc_solver
+
+    ref_drone = get_reference([0, 0, 0, 0], ref_drone)
+    send_reference(ref_drone, control_pub)
 
     # System Figures
     plt.imshow(A_aux)
@@ -198,4 +327,25 @@ def main():
     print(f'Mean iteration time with MLP Model: {1000*np.mean(delta_t):.1f}ms -- {1/np.mean(delta_t):.0f}Hz)')
 
 if __name__ == '__main__':
-    main()
+    try:
+        # Initialization Node
+        rospy.init_node("NMPC_controller",disable_signals=True, anonymous=True)
+
+        # Publisher Info
+        odomety_topic = "/odom"
+        odometry_subscriber = rospy.Subscriber(odomety_topic, Odometry, odometry_call_back)
+
+        # Subscribe Info
+        velocity_topic = "/cmd_vel"
+        velocity_publisher = rospy.Publisher(velocity_topic, Twist, queue_size = 10)
+
+
+        # Main System
+        main(velocity_publisher)
+
+    except(rospy.ROSInterruptException, KeyboardInterrupt):
+        print("Error System")
+        pass
+    else:
+        print("Complete Execution")
+        pass
