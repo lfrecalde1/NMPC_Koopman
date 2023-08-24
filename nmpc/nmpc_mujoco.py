@@ -25,6 +25,10 @@ cent_lz = Identification['cent_lz']
 C = Identification['C']
 A_aux = Identification['A'] 
 B_aux = Identification['B'] 
+## Desired Velocity
+reference_velocities = scipy.io.loadmat('reference_world.mat') 
+vd_world = reference_velocities['vd_world']
+
 
 # Global variables Odometry Drone
 x_real = 0.0
@@ -105,12 +109,12 @@ def main(control_pub):
     # Initial Values System
     # Read Matlab Data
     # Simulation time parameters
-    t_s = 0.03
+    t_s = 0.02
     tf = 20
     t = np.arange(0, tf+t_s, t_s, dtype=np.double)
 
     # Prediction Time
-    t_prediction= 1;
+    t_prediction= 1.5
 
     # Nodes inside MPC
     N = np.arange(0, t_prediction + t_s, t_s)
@@ -142,8 +146,8 @@ def main(control_pub):
     pref_dot[1,:] = 1 * 1.5*(np.cos(1.5*t))
     pref_dot[2,:] = 0.0
 
-    xref[0,:] = 1 * 1.5 * -(np.sin(1*t))
-    xref[1,:] = 1 * 1.5*(np.cos(1*t))
+    xref[0,:] = 1.5*np.sin(0.7*t)*np.cos(0.5*t)-0.15*np.cos(0.1*t)
+    xref[1,:] = 1.5*np.cos(1.7*t)+0.3*np.cos(0.5*t)
     xref[2,:] = 0.5
 
     # Angular Velocities
@@ -160,7 +164,7 @@ def main(control_pub):
     euler = np.zeros((3, t.shape[0]+1 - N_prediction), dtype=np.double)
     euler_p = np.zeros((3, t.shape[0]+1 - N_prediction), dtype=np.double)
 
-    for k in range(0, 50):
+    for k in range(0, 100):
         tic = time.time()
         ## Get Contol Action or nothing
         ref_drone = get_reference([0, 0, 0, 0], ref_drone)
@@ -196,9 +200,9 @@ def main(control_pub):
 
     # Limits Control values
     z_max = 15
-    phi_max = 0.3
-    theta_max = 0.3
-    psi_p_max = 0.3
+    phi_max = 0.22
+    theta_max = 0.22
+    psi_p_max = 0.22
 
     phi_min = -phi_max
     theta_min = -theta_max

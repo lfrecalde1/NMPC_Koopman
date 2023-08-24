@@ -64,9 +64,9 @@
     <motor ctrllimited="true" ctrlrange="-0.03 0.03" gear="0. 0. 0. 0. 0. 1." site="rateZ"/>
     </actuator>
   <sensor>
-  <framequat name="quat_drone" objtype="geom" reftype="body" refname="world" objname="core" noise="0.0005"/>
-  <framepos name="position_drone" objtype="geom" objname="core" noise="0.0005"/>
-  <velocimeter name="linear_velocity_drone" site="thrust" noise="0.0005"/>
-  <gyro name="angular_velocity_drone" site="thrust" noise="0.0005"/>
+  <framequat name="quat_drone" objtype="geom" reftype="body" refname="world" objname="core" noise="0.0001"/>
+  <framepos name="position_drone" objtype="geom" objname="core" noise="0.0001"/>
+  <velocimeter name="linear_velocity_drone" site="thrust" noise="0.0001"/>
+  <gyro name="angular_velocity_drone" site="thrust" noise="0.0001"/>
   </sensor>
 </mujoco>
